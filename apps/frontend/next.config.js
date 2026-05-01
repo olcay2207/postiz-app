@@ -44,18 +44,21 @@ const nextConfig = {
       },
     ];
   },
-  async rewrites() {
-    return [
-      {
-        source: '/uploads/:path*',
-        destination:
-          process.env.STORAGE_PROVIDER === 'local'
-            ? '/api/uploads/:path*'
-            : '/404',
-      },
-    ];
-  },
-};
+async rewrites() {
+  return [
+    {
+      source: '/api/:path*',
+      destination: 'http://localhost:3000/:path*',
+    },
+    {
+      source: '/uploads/:path*',
+      destination:
+        process.env.STORAGE_PROVIDER === 'local'
+          ? '/api/uploads/:path*'
+          : '/404',
+    },
+  ];
+},
 
 export default withSentryConfig(nextConfig, {
   org: process.env.SENTRY_ORG,
