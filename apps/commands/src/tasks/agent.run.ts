@@ -10,6 +10,6 @@ export class AgentRun {
     describe: 'Run the agent',
   })
   async agentRun() {
-    console.log(await this._agentGraphService.start());
+    // not implemented
   }
 }
