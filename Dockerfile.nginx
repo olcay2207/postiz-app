@@ -1,2 +1,4 @@
 FROM ghcr.io/gitroomhq/postiz-app:latest
-CMD ["sh", "-c", "export DATABASE_URL=${DATABASE_URL:-postgresql://postgres@dtb43w70_postiz-db:5432/dtb43w70} && export REDIS_URL=${REDIS_URL:-redis://postiz-redis:6379} && nginx && pnpm run pm2"]
+RUN printf '#!/bin/sh\nexport DATABASE_URL=${DATABASE_URL:-postgresql://postgres@dtb43w70_postiz-db:5432/dtb43w70}\nexport REDIS_URL=${REDIS_URL:-redis://postiz-redis:6379}\nnginx\nexec "$@"\n' > /entrypoint.sh && chmod +x /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["pnpm", "run", "pm2"]
