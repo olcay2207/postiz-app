@@ -1,0 +1,2 @@
+FROM ghcr.io/gitroomhq/postiz-app:latest
+CMD ["sh", "-c", "nginx && pnpm run pm2"]
