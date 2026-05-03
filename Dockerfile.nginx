@@ -1,8 +1,11 @@
 FROM ghcr.io/gitroomhq/postiz-app:latest
 
-# .env dosyasına DATABASE_URL ve REDIS_URL yaz
-RUN { grep -v "^DATABASE_URL=" /app/.env 2>/dev/null; echo "DATABASE_URL=postgresql://postgres@dtb43w70_postiz-db:5432/dtb43w70"; } > /tmp/env_tmp && mv /tmp/env_tmp /app/.env
-RUN { grep -v "^REDIS_URL=" /app/.env 2>/dev/null; echo "REDIS_URL=redis://postiz-redis:6379"; } > /tmp/env_tmp && mv /tmp/env_tmp /app/.env
+ENV CUSTOM_IMAGE=olcay-attempt5
+ENV DATABASE_URL=postgresql://postgres@dtb43w70_postiz-db:5432/dtb43w70
+ENV REDIS_URL=redis://postiz-redis:6379
+ENV MAIN_URL=https://dtb43w70.rpcl.app
+ENV FRONTEND_URL=https://dtb43w70.rpcl.app
+ENV NEXT_PUBLIC_BACKEND_URL=https://dtb43w70.rpcl.app/api
+ENV BACKEND_INTERNAL_URL=http://localhost:3000
 
-# pm2-run script'ine nginx'i ekle
-RUN node -e "const fs=require('fs');const p=JSON.parse(fs.readFileSync('/app/package.json','utf8'));p.scripts['pm2-run']='nginx && '+p.scripts['pm2-run'];fs.writeFileSync('/app/package.json',JSON.stringify(p,null,2));"
+RUN echo "const fs=require('fs');const p=JSON.parse(fs.readFileSync('/app/package.json','utf8'));p.scripts['pm2-run']='nginx && '+p.scripts['pm2-run'];fs.writeFileSync('/app/package.json',JSON.stringify(p,null,2));console.log('pm2-run:',p.scripts['pm2-run']);" > /tmp/fix.js && node /tmp/fix.js
