@@ -1,4 +1,8 @@
 FROM ghcr.io/gitroomhq/postiz-app:latest
-RUN printf '#!/bin/sh\nexport DATABASE_URL=${DATABASE_URL:-postgresql://postgres@dtb43w70_postiz-db:5432/dtb43w70}\nexport REDIS_URL=${REDIS_URL:-redis://postiz-redis:6379}\nnginx\nexec "$@"\n' > /entrypoint.sh && chmod +x /entrypoint.sh
-ENTRYPOINT ["/entrypoint.sh"]
-CMD ["pnpm", "run", "pm2"]
+
+# .env dosyasına DATABASE_URL ve REDIS_URL yaz
+RUN { grep -v "^DATABASE_URL=" /app/.env 2>/dev/null; echo "DATABASE_URL=postgresql://postgres@dtb43w70_postiz-db:5432/dtb43w70"; } > /tmp/env_tmp && mv /tmp/env_tmp /app/.env
+RUN { grep -v "^REDIS_URL=" /app/.env 2>/dev/null; echo "REDIS_URL=redis://postiz-redis:6379"; } > /tmp/env_tmp && mv /tmp/env_tmp /app/.env
+
+# pm2-run script'ine nginx'i ekle
+RUN node -e "const fs=require('fs');const p=JSON.parse(fs.readFileSync('/app/package.json','utf8'));p.scripts['pm2-run']='nginx && '+p.scripts['pm2-run'];fs.writeFileSync('/app/package.json',JSON.stringify(p,null,2));"
